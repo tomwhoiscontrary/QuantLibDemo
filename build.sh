@@ -53,3 +53,5 @@ docker run \
     --rm \
     $image_coords \
     /root/build_inner.sh $ql_version
+
+echo "Finished in ${SECONDS} sec"
