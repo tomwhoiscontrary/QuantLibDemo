@@ -39,7 +39,13 @@ else
     git -C $ql_dir pull --ff-only
 fi
 
+container_name=$(mktemp -u $(basename $0 .sh).XXXXXXXXXXXXXXXX)
+echo "container_name=${container_name}"
+
+trap "docker kill ${container_name} || true" EXIT
+
 docker run \
+    --name $container_name \
     --mount type=bind,source=${cmake_dir},destination=/root/cmake,readonly \
     --mount type=bind,source=${ql_dir},destination=/root/QuantLib.origin,readonly \
     --mount type=bind,source=${project_dir}/build_inner.sh,destination=/root/build_inner.sh,readonly \
