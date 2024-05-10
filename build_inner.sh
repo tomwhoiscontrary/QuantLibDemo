@@ -25,6 +25,6 @@ git clone QuantLib.origin QuantLib
     make -j 8
 )
 
-g++ -I QuantLib/build -I QuantLib -l QuantLib -L QuantLib/build/ql DiscountingCurveDemo.cpp -o DiscountingCurveDemo
+g++ -std=c++17 -I QuantLib/build -I QuantLib -l QuantLib -L QuantLib/build/ql DiscountingCurveDemo.cpp -o DiscountingCurveDemo
 
 LD_LIBRARY_PATH=QuantLib/build/ql ./DiscountingCurveDemo
