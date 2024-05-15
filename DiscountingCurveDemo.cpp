@@ -182,7 +182,7 @@ class DiscountingCurveDemo {
     for (IterationType iterationType = IterationType::WARMUP; //
          iterationType <= IterationType::MEASUREMENT;         //
          iterationType = (IterationType) ((int) iterationType + 1)) {
-      for (int iteration = 1; iteration <= 20; ++iteration) {
+      for (int iteration = 1; iteration <= 100; ++iteration) {
         map<const Period, double>::const_iterator swapRatesIt;
         vector<shared_ptr<SimpleQuote>>::iterator swapQuotesIt;
         for (swapRatesIt = swapRates.cbegin(), swapQuotesIt = swapQuotes.begin();
