@@ -3,11 +3,33 @@
 ql_version=$1
 
 grep PRETTY_NAME /etc/os-release
-gcc --version | head -1
 
 cd
 
 apt update
+
+if [[ -f gcc.tar.gz ]]
+then
+    echo "Using GCC from tarball"
+
+    apt -y remove gcc g++ binutils
+    apt -y autoremove
+    apt-mark hold gcc g++ binutils
+
+    mkdir gcc
+    tar xf gcc.tar.gz -C gcc
+    export PATH=/root/gcc/bin:$PATH
+    extra_library_path=/root/gcc/lib64
+
+    # our packaged GCC has multiarch disabled, so add paths necessary on Debian
+    export CPATH=/usr/include/x86_64-linux-gnu
+    export LIBRARY_PATH=/usr/lib/x86_64-linux-gnu
+else
+    extra_library_path=
+fi
+
+gcc --version | head -1
+
 apt -y install libc6-dev make libboost-all-dev gfortran-
 
 git clone QuantLib.origin QuantLib
@@ -25,4 +47,4 @@ git clone QuantLib.origin QuantLib
 
 g++ -std=c++17 -I QuantLib/build -I QuantLib -l QuantLib -L QuantLib/build/ql DiscountingCurveDemo.cpp -o DiscountingCurveDemo
 
-LD_LIBRARY_PATH=QuantLib/build/ql ./DiscountingCurveDemo
+LD_LIBRARY_PATH=${extra_library_path}:QuantLib/build/ql ./DiscountingCurveDemo

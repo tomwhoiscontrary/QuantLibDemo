@@ -15,7 +15,17 @@ shift $((OPTIND - 1))
 
 echo "Building QuantLib ${ql_version} using GCC ${gcc_version}"
 
-image_coords=gcc:${gcc_version}
+if [[ $gcc_version =~ / ]]
+then
+    image_coords=buildpack-deps:bullseye
+    extra_docker_args="--mount type=bind,source=${gcc_version},destination=/root/gcc.tar.gz,readonly"
+    echo "Using base image ${image_coords} and GCC tarball ${gcc_version}"
+else
+    image_coords=gcc:${gcc_version}
+    extra_docker_args=
+    echo "Using GCC image ${image_coords}"
+fi
+
 docker pull $image_coords
 
 project_dir=$(dirname $0)
@@ -50,6 +60,7 @@ docker run \
     --mount type=bind,source=${ql_dir},destination=/root/QuantLib.origin,readonly \
     --mount type=bind,source=${project_dir}/build_inner.sh,destination=/root/build_inner.sh,readonly \
     --mount type=bind,source=${project_dir}/DiscountingCurveDemo.cpp,destination=/root/DiscountingCurveDemo.cpp,readonly \
+    $extra_docker_args \
     --rm \
     $image_coords \
     /root/build_inner.sh $ql_version
