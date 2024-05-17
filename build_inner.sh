@@ -8,9 +8,7 @@ gcc --version | head -1
 cd
 
 apt update
-# TODO whittle this list - only what is needed for QL now, not boost
-apt -y install curl zip unzip tar autoconf automake autoconf-archive build-essential
-apt -y install libboost-all-dev gfortran-
+apt -y install libc6-dev make libboost-all-dev gfortran-
 
 git clone QuantLib.origin QuantLib
 (
