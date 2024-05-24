@@ -15,10 +15,16 @@ shift $((OPTIND - 1))
 
 echo "Building QuantLib ${ql_version} using GCC ${gcc_version}"
 
+mount_opt() {
+    local source_path=$1
+    local dest_name=$2
+    echo --mount type=bind,source=${source_path},destination=/root/${dest_name},readonly
+}
+
 if [[ $gcc_version =~ / ]]
 then
     image_coords=buildpack-deps:bullseye
-    extra_docker_args="--mount type=bind,source=${gcc_version},destination=/root/gcc.tar.gz,readonly"
+    extra_docker_args=$(mount_opt $gcc_version gcc.tar.gz)
     echo "Using base image ${image_coords} and GCC tarball ${gcc_version}"
 else
     image_coords=gcc:${gcc_version}
@@ -56,10 +62,10 @@ trap "docker kill ${container_name} || true" EXIT
 
 docker run \
     --name $container_name \
-    --mount type=bind,source=${cmake_dir},destination=/root/cmake,readonly \
-    --mount type=bind,source=${ql_dir},destination=/root/QuantLib.origin,readonly \
-    --mount type=bind,source=${project_dir}/build_inner.sh,destination=/root/build_inner.sh,readonly \
-    --mount type=bind,source=${project_dir}/DiscountingCurveDemo.cpp,destination=/root/DiscountingCurveDemo.cpp,readonly \
+    $(mount_opt $cmake_dir cmake) \
+    $(mount_opt $ql_dir QuantLib.origin) \
+    $(mount_opt ${project_dir}/build_inner.sh build_inner.sh) \
+    $(mount_opt ${project_dir}/DiscountingCurveDemo.cpp DiscountingCurveDemo.cpp) \
     $extra_docker_args \
     --rm \
     $image_coords \
