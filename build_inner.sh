@@ -32,6 +32,8 @@ gcc --version | head -1
 
 apt -y install libc6-dev make libboost-all-dev gfortran-
 
+mkdir ql
+
 git clone QuantLib.origin QuantLib
 (
     cd QuantLib
@@ -46,10 +48,15 @@ git clone QuantLib.origin QuantLib
         -D CMAKE_BUILD_TYPE=Release \
         -D QL_USE_STD_CLASSES=ON \
         -D QL_USE_INDEXED_COUPON=ON \
-        -D QL_ERROR_LINES=ON
+        -D QL_ERROR_LINES=ON \
+        -D QL_INSTALL_BENCHMARK=OFF \
+        -D QL_INSTALL_EXAMPLES=OFF \
+        -D QL_INSTALL_TEST_SUITE=OF \
+        -D CMAKE_INSTALL_PREFIX=../../ql
     make -j 8
+    make install
 )
 
-g++ -std=c++17 -I QuantLib/build -I QuantLib -l QuantLib -L QuantLib/build/ql DiscountingCurveDemo.cpp -o DiscountingCurveDemo
+g++ -std=c++17 -I ql/include -l QuantLib -L ql/lib DiscountingCurveDemo.cpp -o DiscountingCurveDemo
 
 LD_LIBRARY_PATH=${extra_library_path}:QuantLib/build/ql ./DiscountingCurveDemo
