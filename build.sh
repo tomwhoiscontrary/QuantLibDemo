@@ -3,12 +3,14 @@
 gcc_version=13.2.0
 cmake_version=3.29.3
 ql_version=v1.34
-while getopts "g:c:q:" flag
+rm_flag=--rm
+while getopts "g:c:q:k" flag
 do
     case $flag in
         g) gcc_version=$OPTARG ;;
         c) cmake_version=$OPTARG ;;
         q) ql_version=$OPTARG ;;
+        k) rm_flag= ;;
     esac
 done
 shift $((OPTIND - 1))
@@ -67,7 +69,7 @@ docker run \
     $(mount_opt ${project_dir}/build_inner.sh build_inner.sh) \
     $(mount_opt ${project_dir}/DiscountingCurveDemo.cpp DiscountingCurveDemo.cpp) \
     $extra_docker_args \
-    --rm \
+    $rm_flag \
     $image_coords \
     /root/build_inner.sh $ql_version
 
