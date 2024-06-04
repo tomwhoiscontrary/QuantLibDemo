@@ -41,7 +41,12 @@ git clone QuantLib.origin QuantLib
     mkdir build
     cd build
     export CXXFLAGS="-O2 -ggdb -Wall -Wno-unknown-pragmas -std=c++14 -fno-math-errno -fno-trapping-math -DBOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS"
-    ~/cmake/bin/cmake .. -G "Unix Makefiles" -D CMAKE_BUILD_TYPE=Release -D QL_USE_STD_CLASSES=ON -D QL_USE_INDEXED_COUPON=ON -D QL_ERROR_LINES=ON
+    ~/cmake/bin/cmake .. \
+        -G "Unix Makefiles" \
+        -D CMAKE_BUILD_TYPE=Release \
+        -D QL_USE_STD_CLASSES=ON \
+        -D QL_USE_INDEXED_COUPON=ON \
+        -D QL_ERROR_LINES=ON
     make -j 8
 )
 
