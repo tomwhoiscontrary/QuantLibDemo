@@ -3,13 +3,15 @@
 gcc_version=13.2.0
 cmake_version=3.29.3
 ql_version=v1.34
+ql_build_dir=
 rm_flag=--rm
-while getopts "g:c:q:k" flag
+while getopts "g:c:q:d:k" flag
 do
     case $flag in
         g) gcc_version=$OPTARG ;;
         c) cmake_version=$OPTARG ;;
         q) ql_version=$OPTARG ;;
+        d) ql_build_dir=$OPTARG ;;
         k) rm_flag= ;;
     esac
 done
@@ -18,9 +20,19 @@ shift $((OPTIND - 1))
 echo "Building QuantLib ${ql_version} using GCC ${gcc_version}"
 
 mount_opt() {
+    local OPTIND
+    ro_option=",readonly"
+    while getopts "w" flag
+    do
+        case $flag in
+            w) ro_option= ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
     local source_path=$1
     local dest_name=$2
-    echo --mount type=bind,source=${source_path},destination=/root/${dest_name},readonly
+    echo --mount type=bind,source=${source_path},destination=/root/${dest_name}${ro_option}
 }
 
 if [[ $gcc_version =~ / ]]
@@ -60,6 +72,13 @@ fi
 container_name=$(mktemp -u $(basename $0 .sh).XXXXXXXXXXXXXXXX)
 echo "container_name=${container_name}"
 
+if [[ -n "$ql_dir" ]]
+then
+    ql_dir_mount_opt=$(mount_opt -w $(readlink -f $ql_build_dir) ql)
+else
+    ql_dir_mount_opt=
+fi
+
 trap "docker kill ${container_name} || true" EXIT
 
 docker run \
@@ -68,6 +87,7 @@ docker run \
     $(mount_opt $ql_dir QuantLib.origin) \
     $(mount_opt ${project_dir}/build_inner.sh build_inner.sh) \
     $(mount_opt ${project_dir}/DiscountingCurveDemo.cpp DiscountingCurveDemo.cpp) \
+    $ql_dir_mount_opt \
     $extra_docker_args \
     $rm_flag \
     $image_coords \

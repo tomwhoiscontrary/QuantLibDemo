@@ -32,7 +32,7 @@ gcc --version | head -1
 
 apt -y install libc6-dev make libboost-all-dev gfortran-
 
-mkdir ql
+mkdir --parents ql
 
 git clone QuantLib.origin QuantLib
 (
