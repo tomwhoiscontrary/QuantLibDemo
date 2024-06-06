@@ -57,6 +57,6 @@ git clone QuantLib.origin QuantLib
     make install
 )
 
-g++ -std=c++17 -I ql/include -l QuantLib -L ql/lib DiscountingCurveDemo.cpp -o DiscountingCurveDemo
+g++ -std=c++17 -Wall -fno-math-errno -fno-trapping-math -ggdb -O2 -I ql/include -l QuantLib -L ql/lib DiscountingCurveDemo.cpp -o DiscountingCurveDemo
 
 LD_LIBRARY_PATH=${extra_library_path}:QuantLib/build/ql ./DiscountingCurveDemo
