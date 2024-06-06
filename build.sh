@@ -72,13 +72,6 @@ fi
 container_name=$(mktemp -u $(basename $0 .sh).XXXXXXXXXXXXXXXX)
 echo "container_name=${container_name}"
 
-if [[ -n "$ql_dir" ]]
-then
-    ql_dir_mount_opt=$(mount_opt -w $(readlink -f $ql_build_dir) ql)
-else
-    ql_dir_mount_opt=
-fi
-
 trap "docker kill ${container_name} || true" EXIT
 
 docker run \
@@ -87,7 +80,7 @@ docker run \
     $(mount_opt $ql_dir QuantLib.origin) \
     $(mount_opt ${project_dir}/build_inner.sh build_inner.sh) \
     $(mount_opt ${project_dir}/DiscountingCurveDemo.cpp DiscountingCurveDemo.cpp) \
-    $ql_dir_mount_opt \
+    ${ql_build_dir:+$(mount_opt -w $(readlink -f $ql_build_dir) ql)} \
     $extra_docker_args \
     $rm_flag \
     $image_coords \
